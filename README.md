@@ -34,7 +34,26 @@ $ php yii migrate --migrationPath=@yiier/actionStore/migrations/
 Usage
 -----
 
-Once the extension is installed, simply use it in your code by  :
+OConfigure Controller class as follows : :
 
 ```php
-<?= \yiier\actionStore\AutoloadExample::widget(); ?>```
+use yiier\actionStore\actions\ActionAction;
+
+class TopicController extends Controller
+{
+    public function actions()
+    {
+        return [
+            'do' => [
+                'class' => ActionAction::className(),
+            ]
+        ];
+    }
+ }
+```
+
+ Url
+ 
+```html
+http://xxxxxxxxxxxxxx/topic/do?type=clap&model=topic&model_id=1
+```
