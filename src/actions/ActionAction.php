@@ -29,12 +29,10 @@ class ActionAction extends \yii\base\Action
             $model->load(array_merge(Yii::$app->request->getQueryParams(), ['user_id' => Yii::$app->user->id]), '');
             $model->validate();
             if (!$model->errors) {
-                if ($counter = ActionStore::createAction($model)) {
-                    Yii::$app->response->format = Response::FORMAT_JSON;
-                    return $counter;
-                }
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                return ['code' => 200, 'data' => ActionStore::createUpdateAction($model), 'message' => 'success'];
             }
-            throw new Exception(json_encode($model->errors));
+            return ['code' => 500, 'data' => '', 'message' => json_encode($model->errors)];
         }
     }
 }

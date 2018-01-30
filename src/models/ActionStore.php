@@ -90,7 +90,7 @@ class ActionStore extends \yii\db\ActiveRecord
      * @return int
      * @throws Exception
      */
-    public static function createAction($model)
+    public static function createUpdateAction($model)
     {
         $conditions = array_filter($model->attributes);
         switch ($model->type) {
@@ -107,14 +107,18 @@ class ActionStore extends \yii\db\ActiveRecord
                 $data = array_merge(['type' => $model->type], $conditions);
                 break;
         }
-        if ($model->type == self::CLAP_TYPE) {
-            $value = self::find()->filterWhere($data)->select('value')->scalar();
-            $model->value = $value + 1;
+        if ($value = self::find()->filterWhere($data)->select('value')->scalar()) {
+            if ($model->type == self::CLAP_TYPE) {
+                $model->value = $value + 1;
+            } else {
+                self::find()->filterWhere($data)->one()->delete();
+                return 0;
+            }
         }
         self::deleteAll($data);
         $model->load($data, '');
         if ($model->save()) {
-            return $model->resetCounter();
+            return (int)$model->resetCounter();
         }
         throw new Exception(json_encode($model->errors));
     }
@@ -123,8 +127,10 @@ class ActionStore extends \yii\db\ActiveRecord
      * @param $model ActionStore
      * @return false|int
      */
-    public static function destroyAction($model)
+    public function destroyAction($model)
     {
+        $data = $this->attributes;
+        unset($data['id'], $data['created_at'], $data['updated_at'], $data['value']);
         return $model->delete();
     }
 
