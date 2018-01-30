@@ -9,6 +9,7 @@ namespace yiier\actionStore\actions;
 
 use Yii;
 use yii\db\Exception;
+use yii\helpers\Json;
 use yii\web\Response;
 use yiier\actionStore\models\ActionStore;
 
@@ -25,14 +26,13 @@ class ActionAction extends \yii\base\Action
         if (Yii::$app->user->isGuest) {
             Yii::$app->getResponse()->redirect(\Yii::$app->getUser()->loginUrl)->send();
         } else {
+            Yii::$app->response->format = Response::FORMAT_JSON;
             $model = new ActionStore();
             $model->load(array_merge(Yii::$app->request->getQueryParams(), ['user_id' => Yii::$app->user->id]), '');
-            $model->validate();
-            if (!$model->errors) {
-                Yii::$app->response->format = Response::FORMAT_JSON;
+            if ($model->validate()) {
                 return ['code' => 200, 'data' => ActionStore::createUpdateAction($model), 'message' => 'success'];
             }
-            return ['code' => 500, 'data' => '', 'message' => json_encode($model->errors)];
+            return ['code' => 500, 'data' => '', 'message' => Json::encode($model->errors)];
         }
     }
 }

@@ -63,6 +63,22 @@ http://xxxxxxxxxxxxxx/topic/do?type=clap&model=topic&model_id=1
 `model` recommend use `Model::tableName()`  
 
 
+http response success(code==200) return json:
+
+```json
+{"code":200,"data":0,"message":"success"}
+```
+
+
+http response failure(code==500) return json:
+
+```json
+{"code":500,"data":"","message":"{\"model_id\":[\"Model ID不能为空。\"]}"}
+```
+
+Demo
+------
+
 **ActiveDataProvider Demo 1**
 
 Controller

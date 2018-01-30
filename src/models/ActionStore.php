@@ -124,18 +124,6 @@ class ActionStore extends \yii\db\ActiveRecord
     }
 
     /**
-     * @param $model ActionStore
-     * @return false|int
-     */
-    public function destroyAction($model)
-    {
-        $data = $this->attributes;
-        unset($data['id'], $data['created_at'], $data['updated_at'], $data['value']);
-        return $model->delete();
-    }
-
-
-    /**
      * 返回计数器
      * @return int
      */
