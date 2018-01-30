@@ -93,7 +93,7 @@ class TopicController extends Controller
     {
         $dataProvider = new ActiveDataProvider([
             'query' => ActionStore::find()
-                ->where(['user_id' => user()->id, 'type' => 'favorite']),
+                ->where(['user_id' => Yii::$app->user->id, 'type' => 'favorite']),
             'pagination' => [
                 'pageSize' => 10,
             ],
@@ -164,7 +164,7 @@ class TopicController extends Controller
         $dataProvider = new ActiveDataProvider([
             'query' => ActionStoreSearch::find()
                 ->joinWith('company')
-                ->where(['user_id' => user()->id, 'type' => 'favorite']),
+                ->where(['user_id' => Yii::$app->user->id, 'type' => 'favorite']),
             'pagination' => [
                 'pageSize' => 10,
             ],
