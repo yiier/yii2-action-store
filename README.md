@@ -2,6 +2,12 @@ ActionStore for Yii2
 ====================
 ActionStore for Yii2
 
+[![Latest Stable Version](https://poser.pugx.org/yiier/yii2-action-store/v/stable)](https://packagist.org/packages/yiier/yii2-action-store) 
+[![Total Downloads](https://poser.pugx.org/yiier/yii2-action-store/downloads)](https://packagist.org/packages/yiier/yii2-action-store) 
+[![Latest Unstable Version](https://poser.pugx.org/yiier/yii2-action-store/v/unstable)](https://packagist.org/packages/yiier/yii2-action-store) 
+[![License](https://poser.pugx.org/yiier/yii2-action-store/license)](https://packagist.org/packages/yiier/yii2-action-store)
+
+
 Installation
 ------------
 
