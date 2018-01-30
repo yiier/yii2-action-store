@@ -155,7 +155,7 @@ Controller
 
 ```php
 <?php
-use yiier\actionStore\actions\ActionStoreSearch;
+use common\models\ActionStoreSearch;
 
 class TopicController extends Controller
 {
