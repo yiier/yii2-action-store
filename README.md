@@ -63,7 +63,7 @@ class TopicController extends Controller
 **Url**
  
 ```html
-http://xxxxxxxxxxxxxx/topic/do?type=clap&model=topic&model_id=1
+POST http://xxxxxxxxxxxxxx/topic/do?type=clap&model=topic&model_id=1
 ```
 
 `model` recommend use `Model::tableName()`  
