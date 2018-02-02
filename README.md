@@ -257,3 +257,23 @@ class ActionStoreSearch extends ActionStore
     }
 }
 ```
+
+**resetCounter**
+
+get user model_id count
+
+```php
+ActionStore::resetCounter(
+    ActionStoreSearch::FAVORITE_TYPE,
+    ['model' => Company::tableName(), 'model_id' => $company->id, 'user_id' => \Yii::$app->user->id]
+);
+```
+
+get all  model_id count
+
+```php
+ActionStore::resetCounter(
+    ActionStoreSearch::FAVORITE_TYPE,
+    ['model' => Company::tableName(), 'model_id' => $company->id]
+);
+```
