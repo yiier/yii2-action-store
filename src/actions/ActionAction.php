@@ -8,13 +8,17 @@
 namespace yiier\actionStore\actions;
 
 use Yii;
-use yii\db\Exception;
 use yii\helpers\Json;
 use yii\web\Response;
 use yiier\actionStore\models\ActionStore;
 
 class ActionAction extends \yii\base\Action
 {
+    /**
+     * @var string
+     */
+    public $actionClass = '\yiier\actionStore\models\ActionStore';
+
     public function init()
     {
         parent::init();
@@ -27,7 +31,8 @@ class ActionAction extends \yii\base\Action
             Yii::$app->getResponse()->redirect(\Yii::$app->getUser()->loginUrl)->send();
         } else {
             Yii::$app->response->format = Response::FORMAT_JSON;
-            $model = new ActionStore();
+            /** @var ActionStore $model */
+            $model = Yii::createObject($this->actionClass);
             $model->load(array_merge(Yii::$app->request->getQueryParams(), ['user_id' => Yii::$app->user->id]), '');
             if ($model->validate()) {
                 return ['code' => 200, 'data' => ActionStore::createUpdateAction($model), 'message' => 'success'];

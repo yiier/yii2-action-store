@@ -37,6 +37,11 @@ class ActionStore extends \yii\db\ActiveRecord
     const CLAP_TYPE = 'clap';
 
     /**
+     * @var string
+     */
+    const VIEW_TYPE = 'view';
+
+    /**
      * @inheritdoc
      */
     public static function tableName()
@@ -95,11 +100,11 @@ class ActionStore extends \yii\db\ActiveRecord
         $conditions = array_filter($model->attributes);
         switch ($model->type) {
             case self::LIKE_TYPE:
-                self::deleteAll(array_merge(['type' => self::DISLIKE_TYPE], $conditions));
+                self::findOne(array_merge(['type' => self::DISLIKE_TYPE], $conditions))->delete();
                 $data = array_merge(['type' => self::LIKE_TYPE], $conditions);
                 break;
             case self::DISLIKE_TYPE:
-                self::deleteAll(array_merge(['type' => self::LIKE_TYPE], $conditions));
+                self::findOne(array_merge(['type' => self::LIKE_TYPE], $conditions))->delete();
                 $data = array_merge(['type' => self::DISLIKE_TYPE], $conditions);
                 break;
 
@@ -107,30 +112,34 @@ class ActionStore extends \yii\db\ActiveRecord
                 $data = array_merge(['type' => $model->type], $conditions);
                 break;
         }
-        if ($value = self::find()->filterWhere($data)->select('value')->scalar()) {
-            if ($model->type == self::CLAP_TYPE) {
-                $model->value = $value + 1;
+        if ($didModel = $model::find()->filterWhere($data)->one()) {
+            if (!in_array($didModel->type, [self::CLAP_TYPE, self::VIEW_TYPE])) {
+                return $didModel->delete();
             } else {
-                self::find()->filterWhere($data)->one()->delete();
-                return 0;
+                $model = $didModel;
+                $data['value'] = $didModel->value + 1;
             }
         }
-        self::deleteAll($data);
-        $model->load($data, '');
+        $model->setAttributes($data);
         if ($model->save()) {
-            return (int)$model->resetCounter();
+            unset($conditions['id'], $conditions['created_at'], $conditions['updated_at'], $conditions['value']);
+            return self::resetCounter($model->type, $conditions);
         }
         throw new Exception(json_encode($model->errors));
     }
 
+
     /**
      * 返回计数器
+     * @param $type
+     * @param $conditions
      * @return int
      */
-    public function resetCounter()
+    public static function resetCounter($type, $conditions)
     {
-        $data = $this->attributes;
-        unset($data['id'], $data['created_at'], $data['updated_at'], $data['value']);
-        return self::find()->filterWhere($data)->select('value')->scalar();
+        return (int)self::find()
+            ->filterWhere(array_merge(['type' => $type], $conditions))
+            ->select('value')
+            ->sum('value');
     }
 }

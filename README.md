@@ -45,6 +45,7 @@ Usage
 Configure Controller class as follows : :
 
 ```php
+<?php
 use yiier\actionStore\actions\ActionAction;
 
 class TopicController extends Controller
@@ -57,7 +58,7 @@ class TopicController extends Controller
             ]
         ];
     }
- }
+}
 ```
 
 **Url**
@@ -113,7 +114,7 @@ class TopicController extends Controller
             'company' => $company,
         ]);
     }
- }
+}
 ``` 
 
 View
@@ -152,7 +153,7 @@ class ActionStoreSearch extends ActionStore
 {
     public function getCompany()
     {
-        return $this->hasOne(FundCompany::className(), ['id' => 'model_id']);
+        return $this->hasOne(Company::className(), ['id' => 'model_id']);
     }
 }
 ```
@@ -181,7 +182,7 @@ class TopicController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
- }
+}
 ```
 View
 
@@ -194,3 +195,65 @@ View
     'options' => ['class' => 'collection-wrap'],
 ]) ?>
 ``` 
+
+
+**actionClass Demo**
+
+Controller
+
+```php
+<?php
+use common\models\ActionStoreSearch;
+use yiier\actionStore\actions\ActionAction;
+
+class TopicController extends Controller
+{
+    public function actions()
+    {
+        return [
+            'do' => [
+                'class' => ActionAction::className(),
+                'actionClass' => ActionStoreSearch::className()
+            ]
+        ];
+    }
+}
+```
+
+ActionStoreSearch.php
+
+```php
+<?php
+use yiier\actionStore\models\ActionStore;
+
+class ActionStoreSearch extends ActionStore
+{
+    /**
+     * @var string
+     */
+    const FAVORITE_TYPE = 'favorite';
+
+    public function getCompany()
+    {
+        return $this->hasOne(Company::className(), ['id' => 'model_id']);
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+        if ($insert) {
+            if ($this->type == self::FAVORITE_TYPE && $this->model == Company::tableName()) {
+                Company::updateAllCounters(['favorite_count' => 1], ['id' => $this->model_id]);
+            }
+        }
+    }
+
+    public function afterDelete()
+    {
+        parent::afterDelete();
+        if ($this->type == self::FAVORITE_TYPE && $this->model == Company::tableName()) {
+            Company::updateAllCounters(['favorite_count' => -1], ['id' => $this->model_id]);
+        }
+    }
+}
+```
