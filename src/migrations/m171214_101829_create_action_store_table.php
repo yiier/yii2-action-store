@@ -19,11 +19,11 @@ class m171214_101829_create_action_store_table extends Migration
     {
         $this->createTable($this->tableName, [
             'id' => $this->primaryKey(),
-            'type' => $this->string()->notNull(),
+            'type' => $this->string(20)->notNull(),
             'value' => $this->integer()->defaultValue(1),
-            'user_type' => $this->string()->defaultValue('user'),
+            'user_type' => $this->string(20)->defaultValue('user'),
             'user_id' => $this->integer()->notNull(),
-            'model' => $this->string()->notNull(),
+            'model' => $this->string(20)->notNull(),
             'model_id' => $this->integer()->notNull(),
             'created_at' => $this->integer()->defaultValue(null),
             'updated_at' => $this->integer()->defaultValue(null),
