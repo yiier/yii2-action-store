@@ -68,7 +68,7 @@ class ActionStore extends \yii\db\ActiveRecord
             [['type', 'model', 'model_id'], 'required'],
             [['user_id', 'model_id', 'value', 'created_at', 'updated_at'], 'integer'],
             ['user_type', 'default', 'value' => 'user'],
-            [['type', 'user_type', 'model'], 'string', 'max' => 255],
+            [['type', 'user_type', 'model'], 'string', 'max' => 20],
         ];
     }
 
