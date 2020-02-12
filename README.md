@@ -260,7 +260,7 @@ class ActionStoreSearch extends ActionStore
 }
 ```
 
-**resetCounter**
+**Get Counter**
 
 get user model_id count
 
