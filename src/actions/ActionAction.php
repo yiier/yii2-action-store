@@ -44,7 +44,6 @@ class ActionAction extends \yii\base\Action
             Yii::$app->response->format = Response::FORMAT_JSON;
             /** @var ActionStore $model */
             $model = Yii::createObject($this->actionClass);
-            $model->
             $model->load(array_merge(Yii::$app->request->getQueryParams(), ['user_id' => Yii::$app->user->id]), '');
 
             if ($model->validate()) {
@@ -81,7 +80,7 @@ class ActionAction extends \yii\base\Action
                 break;
         }
         if ($didModel = $model::find()->filterWhere($data)->one()) {
-            if (!in_array($didModel->type, [$this->counterType])) {
+            if (!in_array($didModel->type, $this->counterType)) {
                 return $didModel->delete();
             } else {
                 $model = $didModel;
