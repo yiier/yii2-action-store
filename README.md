@@ -55,8 +55,8 @@ class TopicController extends Controller
         return [
             'do' => [
                 'class' => ActionAction::className(),
-                'pairsType' => ['want','own'],
-                'counterType' => ['apply'],
+                'pairsType' => ['want','own'], // Optional,default ['like', 'dislike']
+                'counterType' => ['apply'], // Optional,default ['view', 'clap']
             ]
         ];
     }
