@@ -21,7 +21,7 @@ class ActionAction extends \yii\base\Action
     public $actionClass = '\yiier\actionStore\models\ActionStore';
 
     /**
-     * @var string Appear in pairs, only one will be recorded
+     * @var array Appear in pairs, only one will be recorded
      */
     public $pairsType = ['like', 'dislike'];
 
