@@ -55,6 +55,8 @@ class TopicController extends Controller
         return [
             'do' => [
                 'class' => ActionAction::className(),
+                'pairsType' => ['want','own'],
+                'counterType' => ['apply'],
             ]
         ];
     }
@@ -263,7 +265,7 @@ class ActionStoreSearch extends ActionStore
 get user model_id count
 
 ```php
-ActionStore::resetCounter(
+ActionStore::getCounter(
     ActionStoreSearch::FAVORITE_TYPE,
     ['model' => Company::tableName(), 'model_id' => $company->id, 'user_id' => \Yii::$app->user->id]
 );
@@ -272,7 +274,7 @@ ActionStore::resetCounter(
 get all  model_id count
 
 ```php
-ActionStore::resetCounter(
+ActionStore::getCounter(
     ActionStoreSearch::FAVORITE_TYPE,
     ['model' => Company::tableName(), 'model_id' => $company->id]
 );

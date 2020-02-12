@@ -4,7 +4,6 @@ namespace yiier\actionStore\models;
 
 use Yii;
 use yii\behaviors\TimestampBehavior;
-use yii\db\Exception;
 
 /**
  * This is the model class for table "{{%action_store}}".
@@ -21,26 +20,6 @@ use yii\db\Exception;
  */
 class ActionStore extends \yii\db\ActiveRecord
 {
-    /**
-     * @var string
-     */
-    const LIKE_TYPE = 'like';
-
-    /**
-     * @var string
-     */
-    const DISLIKE_TYPE = 'dislike';
-
-    /**
-     * @var string
-     */
-    const CLAP_TYPE = 'clap';
-
-    /**
-     * @var string
-     */
-    const VIEW_TYPE = 'view';
-
     /**
      * @inheritdoc
      */
@@ -91,51 +70,12 @@ class ActionStore extends \yii\db\ActiveRecord
 
 
     /**
-     * @param $model ActionStore
-     * @return int
-     * @throws Exception
-     */
-    public static function createUpdateAction($model)
-    {
-        $conditions = array_filter($model->attributes);
-        switch ($model->type) {
-            case self::LIKE_TYPE:
-                self::findOne(array_merge(['type' => self::DISLIKE_TYPE], $conditions))->delete();
-                $data = array_merge(['type' => self::LIKE_TYPE], $conditions);
-                break;
-            case self::DISLIKE_TYPE:
-                self::findOne(array_merge(['type' => self::LIKE_TYPE], $conditions))->delete();
-                $data = array_merge(['type' => self::DISLIKE_TYPE], $conditions);
-                break;
-
-            default:
-                $data = array_merge(['type' => $model->type], $conditions);
-                break;
-        }
-        if ($didModel = $model::find()->filterWhere($data)->one()) {
-            if (!in_array($didModel->type, [self::CLAP_TYPE, self::VIEW_TYPE])) {
-                return $didModel->delete();
-            } else {
-                $model = $didModel;
-                $data['value'] = $didModel->value + 1;
-            }
-        }
-        $model->setAttributes($data);
-        if ($model->save()) {
-            unset($conditions['id'], $conditions['created_at'], $conditions['updated_at'], $conditions['value']);
-            return self::resetCounter($model->type, $conditions);
-        }
-        throw new Exception(json_encode($model->errors));
-    }
-
-
-    /**
-     * 返回计数器
+     * 获取计数器
      * @param $type
      * @param $conditions
      * @return int
      */
-    public static function resetCounter($type, $conditions)
+    public static function getCounter($type, $conditions)
     {
         return (int)self::find()
             ->filterWhere(array_merge(['type' => $type], $conditions))
