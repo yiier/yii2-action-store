@@ -70,13 +70,13 @@ class ActionAction extends \yii\base\Action
                     call_user_func($this->successCallable, $model);
                 }
                 if ($this->returnCallable && is_callable($this->returnCallable)) {
-                    return call_user_func($this->successCallable, $model);
+                    return call_user_func($this->returnCallable, $model);
                 }
                 $data = ArrayHelper::merge(ArrayHelper::toArray($model), ['typeCounter' => $model->getTypeCounter()]);
                 return ['code' => 200, 'data' => $data, 'message' => 'success'];
             }
             if ($this->returnCallable && is_callable($this->returnCallable)) {
-                return call_user_func($this->successCallable, $model);
+                return call_user_func($this->returnCallable, $model);
             }
             return ['code' => 500, 'data' => '', 'message' => Json::encode($model->errors)];
         }

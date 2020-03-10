@@ -19,6 +19,8 @@ use yii\helpers\ArrayHelper;
  * @property int $model_id
  * @property int $created_at
  * @property int $updated_at
+ *
+ * @property int $typeCounter
  */
 class ActionStore extends \yii\db\ActiveRecord
 {
