@@ -57,6 +57,8 @@ class TopicController extends Controller
                 'class' => ActionAction::className(),
                 'pairsType' => ['want','own'], // Optional,default ['like', 'dislike']
                 'counterType' => ['apply'], // Optional,default ['view', 'clap']
+                'successCallable' => function ($model){ }, // Optional
+                'returnCallable' => function ($model){ return $model; }, // Optional
             ]
         ];
     }
@@ -75,7 +77,7 @@ POST http://xxxxxxxxxxxxxx/topic/do?type=clap&model=topic&model_id=1
 http response success(code==200) return json:
 
 ```json
-{"code":200,"data":0,"message":"success"}
+{"code":200,"data":{"id":156,"type":"apply","value":29,"user_type":"user","user_id":7,"model":"xx","model_id":"256","created_at":1583827902,"updated_at":1583830173,"typeCounter":29},"message":"success"}
 ```
 
 
@@ -278,4 +280,17 @@ ActionStore::getCounter(
     ActionStoreSearch::FAVORITE_TYPE,
     ['model' => Company::tableName(), 'model_id' => $company->id]
 );
+```
+
+**Use `createUpdateAction`**
+
+
+```php
+$actionStore = new ActionStore();
+$actionStore->setAttributes([
+    'type' => 'download',
+    'model' => Resource::tableName(),
+    'model_id' => $id
+]);
+$actionStore->createUpdateAction($actionStore);
 ```

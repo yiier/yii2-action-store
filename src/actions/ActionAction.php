@@ -8,13 +8,24 @@
 namespace yiier\actionStore\actions;
 
 use Yii;
-use yii\db\Exception;
+use yii\base\InvalidConfigException;
 use yii\helpers\Json;
 use yii\web\Response;
 use yiier\actionStore\models\ActionStore;
+use yiier\helpers\ArrayHelper;
 
 class ActionAction extends \yii\base\Action
 {
+    /**
+     * @var callable
+     */
+    public $successCallable;
+
+    /**
+     * @var callable
+     */
+    public $returnCallable;
+
     /**
      * @var string
      */
@@ -36,6 +47,13 @@ class ActionAction extends \yii\base\Action
         \Yii::$app->controller->enableCsrfValidation = false;
     }
 
+    /**
+     * @return array
+     * @throws InvalidConfigException
+     * @throws \Throwable
+     * @throws \yii\db\Exception
+     * @throws \yii\db\StaleObjectException
+     */
     public function run()
     {
         if (Yii::$app->user->isGuest) {
@@ -44,54 +62,24 @@ class ActionAction extends \yii\base\Action
             Yii::$app->response->format = Response::FORMAT_JSON;
             /** @var ActionStore $model */
             $model = Yii::createObject($this->actionClass);
-            $model->load(array_merge(Yii::$app->request->getQueryParams(), ['user_id' => Yii::$app->user->id]), '');
+            $model->load(Yii::$app->request->getQueryParams(), '');
 
             if ($model->validate()) {
-                return ['code' => 200, 'data' => $this->createUpdateAction($model), 'message' => 'success'];
+                $model = ActionStore::createUpdateAction($model, $this->pairsType, $this->counterType);
+                if ($this->successCallable && is_callable($this->successCallable)) {
+                    call_user_func($this->successCallable, $model);
+                }
+                if ($this->returnCallable && is_callable($this->returnCallable)) {
+                    return call_user_func($this->successCallable, $model);
+                }
+                $data = ArrayHelper::merge(ArrayHelper::toArray($model), ['typeCounter' => $model->getTypeCounter()]);
+                return ['code' => 200, 'data' => $data, 'message' => 'success'];
+            }
+            if ($this->returnCallable && is_callable($this->returnCallable)) {
+                return call_user_func($this->successCallable, $model);
             }
             return ['code' => 500, 'data' => '', 'message' => Json::encode($model->errors)];
         }
     }
 
-
-    /**
-     * @param $model ActionStore
-     * @return int
-     * @throws Exception
-     * @throws \Throwable
-     */
-    protected function createUpdateAction($model)
-    {
-        $conditions = array_filter($model->attributes);
-        $pairsType0 = $this->pairsType[0];
-        $pairsType1 = $this->pairsType[1];
-        switch ($model->type) {
-            case $pairsType0:
-                $model::find()->where(array_merge(['type' => $pairsType1], $conditions))->one()->delete();
-                $data = array_merge(['type' => $pairsType0], $conditions);
-                break;
-            case $pairsType1:
-                $model::find()->where(array_merge(['type' => $pairsType0], $conditions))->one()->delete();
-                $data = array_merge(['type' => $pairsType1], $conditions);
-                break;
-
-            default:
-                $data = array_merge(['type' => $model->type], $conditions);
-                break;
-        }
-        if ($didModel = $model::find()->filterWhere($data)->one()) {
-            if (!in_array($didModel->type, $this->counterType)) {
-                return $didModel->delete();
-            } else {
-                $model = $didModel;
-                $data['value'] = $didModel->value + 1;
-            }
-        }
-        $model->setAttributes($data);
-        if ($model->save()) {
-            unset($conditions['id'], $conditions['created_at'], $conditions['updated_at'], $conditions['value']);
-            return $model::getCounter($model->type, $conditions);
-        }
-        throw new Exception(json_encode($model->errors));
-    }
 }
