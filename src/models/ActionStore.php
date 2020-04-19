@@ -119,11 +119,15 @@ class ActionStore extends \yii\db\ActiveRecord
         $pairsType1 = ArrayHelper::getValue($pairsType, 1);
         switch ($model->type) {
             case $pairsType0:
-                $model::find()->where(array_merge(['type' => $pairsType1], $conditions))->one()->delete();
+                if ($model::find()->where(array_merge(['type' => $pairsType1], $conditions))->one()) {
+                    $model->delete();
+                }
                 $data = array_merge(['type' => $pairsType0], $conditions);
                 break;
             case $pairsType1:
-                $model::find()->where(array_merge(['type' => $pairsType0], $conditions))->one()->delete();
+                if ($model::find()->where(array_merge(['type' => $pairsType0], $conditions))->one()) {
+                    $model->delete();
+                }
                 $data = array_merge(['type' => $pairsType1], $conditions);
                 break;
 
